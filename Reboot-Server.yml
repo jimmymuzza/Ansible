@@ -1,0 +1,7 @@
+---
+    - name: InstallDefenderForLinux
+      hosts: testserver
+      become: yes
+      tasks:
+        - name: Unconditionally reboot the machine with all defaults
+          ansible.builtin.reboot:
