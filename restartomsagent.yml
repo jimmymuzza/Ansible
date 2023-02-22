@@ -1,0 +1,10 @@
+---
+- name: restart rsyslog
+  hosts: logcollectors
+  become: true
+  tasks:
+    - name: restart OMS Agent
+      ansible.builtin.service:
+        name: omsagent-<WORKSPACEID>
+        state: restarted
+        enabled: true
