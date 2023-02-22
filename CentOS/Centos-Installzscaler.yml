@@ -1,0 +1,30 @@
+---
+- name: InstallZscaler
+  hosts: testserver
+  become: yes
+  tasks:
+    - name: Copy Zscaler cert with owner and permissions
+      ansible.builtin.copy:
+        src: /etc/ansible/playbookfiles/<CERTNAME>
+        dest: /etc/pki/ca-trust/source/anchors/<CERTNAME>
+
+    - name: Install Cert
+      shell: "update-ca-trust"
+
+    - name: Copy environment file
+      ansible.builtin.copy:
+        src: /etc/ansible/playbookfiles/environment
+        dest: /etc/environment
+        backup: yes
+
+    - name: Copy yum.conf
+      ansible.builtin.copy:
+        src: /etc/ansible/playbookfiles/yum.conf
+        dest: /etc/yum.conf
+        backup: yes
+
+    - name: Copy wgetrc proxy settings
+      ansible.builtin.copy:
+        src: /etc/ansible/playbookfiles/wgetrc
+        dest: /etc/wgetrc
+        backup: yes
