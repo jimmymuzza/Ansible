@@ -1,0 +1,11 @@
+---
+- hosts: testserver
+  become: yes
+  tasks:
+  - name: removing multiple files
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+          - /etc/rsyslog.d/95-omsagent.conf
+          - /etc/rsyslog.d/security-config-omsagent.conf
