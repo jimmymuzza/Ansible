@@ -1,0 +1,10 @@
+---
+- name: restart rsyslog
+  hosts: logcollectors
+  become: true
+  tasks:
+    - name: restart rsyslog
+      ansible.builtin.service:
+        name: rsyslog
+        state: restarted
+        enabled: true
