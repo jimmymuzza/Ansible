@@ -1,0 +1,62 @@
+---
+    - name: InstallDefenderForLinux
+      hosts: testserver
+      become: yes
+      tasks:
+        - name: Create Defender configuration directories.
+          file:
+            path: /etc/opt/microsoft/mdatp/
+            state: "directory"
+            mode: 0755
+            owner: root
+            group: root
+          tags:
+            - onboarding
+
+        - name: Copy Defender Onboarding Package
+          ansible.builtin.copy:
+            src: /etc/ansible/playbookfiles/MicrosoftDefenderATPOnboardingLinuxServer.py
+            dest: /etc/opt/microsoft/mdatp/MicrosoftDefenderATPOnboardingLinuxServer.py
+
+        - name: Add Microsoft APT key
+          apt_key:
+            key: https://packages.microsoft.com/keys/microsoft.asc
+            state: present
+          when: ansible_os_family == "Debian"
+          tags:
+            - ubuntu
+            - repo
+
+        - name: Add Microsoft apt repository for MDATP
+          yum_repository:
+            name: packages-microsoft-prod
+            description: Microsoft Defender for Endpoint
+            baseurl: https://packages.microsoft.com/ubuntu/20.04/prod/
+          when: ansible_os_family == "Debian"
+
+
+        - name: Install MDATP
+          apt:
+            name: mdatp
+            state: latest
+            update_cache: yes
+
+        - name: Install Python3 to run onboarding file
+          apt:
+            name: 'python3'
+            state: latest
+            update_cache: yes
+
+        - name: Run Onboarding file
+          shell: "python3 /etc/opt/microsoft/mdatp/MicrosoftDefenderATPOnboardingLinuxServer.py"
+
+        - name: Copy Defender Configuration file
+          ansible.builtin.copy:
+            src: /etc/ansible/playbookfiles/mdatp_managed.json
+            dest: /etc/opt/microsoft/mdatp/managed/mdatp_managed.json
+
+        - name: restart mdatp
+          ansible.builtin.service:
+            name: mdatp
+            state: restarted
+            enabled: true
