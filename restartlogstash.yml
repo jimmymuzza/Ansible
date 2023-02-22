@@ -1,0 +1,10 @@
+---
+- name: restart rsyslog
+  hosts: testserver
+  become: true
+  tasks:
+    - name: restart rsyslog
+      ansible.builtin.service:
+        name: logstash
+        state: restarted
+        enabled: true
