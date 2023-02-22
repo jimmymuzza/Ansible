@@ -1,0 +1,12 @@
+---
+- hosts: testservers
+  become: yes
+  tasks:
+  - name: Run the equivalent of "apt-get update"
+    ansible.builtin.apt:
+      update_cache: yes
+
+  - name: Update all packages to their latest version
+    ansible.builtin.apt:
+      name: "*"
+      state: latest
